@@ -99,6 +99,8 @@ check_supported_distribution() {
     local distribution=$(get_distribution_release)
     case "$distribution" in
         "ubuntu16.04") return 0 ;;
+	"ubuntu17.04") return 0 ;;
+	"ubuntu17.10") return 0 ;;
         "ubuntu14.04") return 0 ;;
         "rhel7")       return 0 ;;
         "centos7")     return 0 ;;
@@ -140,55 +142,6 @@ clean_all_files() {
 }
 
 #-------------------------------------------------------------------------------
-# Remove Nettle installation which was done from sources (only done for Ubuntu distro)
-remove_nettle_from_source() {
-    nettle_uninstall_log=$OPENAIRCN_DIR/BUILD/LOG/nettle_uninstall_log.txt
-    echo_info "\nUn-Installing Nettle from sources. The log file for nettle un-installation is here: $nettle_uninstall_log "
-    (
-    $SUDO apt-get remove -y nettle-dev nettle-bin 
-    cd /tmp
-    echo "Downloading nettle archive"
-    $SUDO rm -rf /tmp/nettle-2.5.tar.gz* /tmp/nettle-2.5
-    wget https://ftp.gnu.org/gnu/nettle/nettle-2.5.tar.gz
-    if [ $? -ne 0 ]; then
-      wget ftp://ftp.lysator.liu.se/pub/security/lsh/nettle-2.5.tar.gz
-    fi
-    if [ ! -f nettle-2.5.tar.gz ]; then
-      echo_error "Could not download nettle source files"
-      cd -
-      return
-    fi
-    tar -xzf nettle-2.5.tar.gz
-    cd nettle-2.5/
-    ./configure --disable-openssl --enable-shared --prefix=/usr 
-    $SUDO make uninstall || true 
-    ) >& $nettle_uninstall_log
-}
-
-#-------------------------------------------------------------------------------
-# Remove Gnutls from source (only done for Ubuntu distro)
-remove_gnutls_from_source(){
-    gnutls_uninstall_log=$OPENAIRCN_DIR/BUILD/LOG/gnutls_uninstall_log.txt
-    echo_info "\nUn-Installing Gnutls. The log file for Gnutls un-installation is here: $gnutls_uninstall_log "
-    (
-    $SUDO apt-get remove -y libgnutls-dev
-    cd /tmp 
-    echo "Downloading gnutls archive"
-    $SUDO rm -rf /tmp/gnutls-3.1.23.tar.xz* /tmp/gnutls-3.1.23
-    wget http://mirrors.dotsrc.org/gcrypt/gnutls/v3.1/gnutls-3.1.23.tar.xz || \
-      wget ftp://ftp.gnutls.org/gcrypt/gnutls/v3.1/gnutls-3.1.23.tar.xz
-    if [ ! -f gnutls-3.1.23.tar.xz ]; then
-      echo_error "Could not download gnutls source files"
-      cd -
-      return
-    fi
-    tar -xJf gnutls-3.1.23.tar.xz
-    cd gnutls-3.1.23/
-    ./configure --prefix=/usr
-    $SUDO make uninstall || true
-    )>& $gnutls_uninstall_log
-}
-
 ###################################
 # Compilers
 ###################################
@@ -461,25 +414,25 @@ install_freediameter_from_source() {
       autoconf \
       automake \
       bison \
-      build-essential \
-      cmake \
-      cmake-curses-gui \
-      debhelper \
-      flex \
-      g++ \
-      gcc \
-      gdb \
-      libgcrypt-dev \
-      libgnutls-dev \
-      libidn11-dev \
-      libmysqlclient-dev \
-      libpq-dev \
-      libsctp1 \
-      libsctp-dev \
-      libxml2-dev \
-      mercurial \
-      python-dev \
-      ssl-cert \
+    build-essential \
+    cmake \
+    cmake-curses-gui  \
+    debhelper \
+    flex  \
+    g++ \
+    gcc \
+    gdb \
+    libgcrypt-dev \
+    libgnutls28-dev \
+    libidn11-dev \
+    libmysqlclient-dev \
+    libpq-dev \
+    libsctp1 \
+    libsctp-dev \
+    libxml2-dev \
+    mercurial \
+    python-dev \
+    ssl-cert \
       swig"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
     PACKAGE_LIST="\
@@ -732,6 +685,14 @@ check_install_hss_software() {
         libapache2-mod-php*"
       ;;
     "ubuntu16.04")
+          PACKAGE_LIST="\
+        php \
+        phpmyadmin \
+        python-pexpect \
+        libapache2-mod-php*"
+      ;;
+
+    "ubuntu17.04" | "ubuntu17.10")
       PACKAGE_LIST="\
         php \
         phpmyadmin \
@@ -782,7 +743,7 @@ check_install_mme_software() {
       doxygen \
       doxygen-gui \
       flex \
-      gccxml \
+    castxml \
       gdb \
       git \
       pkg-config \
@@ -860,11 +821,8 @@ check_install_mme_software() {
   fi
 
   if [[ $OS_DISTRO == 'ubuntu' ]]; then
-    #Remove old gnutls/nettle installation that was done from sources
-    remove_nettle_from_source
-    remove_gnutls_from_source
     $SUDO apt-get install -y nettle-dev nettle-bin
-    $SUDO apt-get install -y libgnutls-dev
+  $SUDO apt-get install -y libgnutls28-dev
   fi
   
   install_freediameter_from_source $1
@@ -953,7 +911,7 @@ check_install_spgw_software() {
       doxygen \
       doxygen-gui \
       flex \
-      gccxml \
+      castxml \
       gdb \
       git \
       pkg-config \

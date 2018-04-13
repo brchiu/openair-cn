@@ -111,7 +111,7 @@ int gtpv1u_init (spgw_config_t *spgw_config)
     gtp_mod_kernel_init(&sgw_app.gtpv1u_data.fd0, &sgw_app.gtpv1u_data.fd1u,
         &spgw_config->pgw_config.ue_pool_addr[i],
         spgw_config->pgw_config.ue_pool_mask[i],
-        spgw_config->pgw_config.ipv4.mtu_SGI);
+          spgw_config);
   }
   // END-GTP quick integration only for evaluation purpose
 
