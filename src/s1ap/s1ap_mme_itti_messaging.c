@@ -46,8 +46,8 @@ int
 s1ap_mme_itti_nas_uplink_ind (
   const mme_ue_s1ap_id_t  ue_id,
   STOLEN_REF bstring *payload,
-  const tai_t      const* tai,
-  const ecgi_t     const* cgi)
+  const tai_t      *const tai,
+  const ecgi_t     *const cgi)
 {
   MessageDef                             *message_p = NULL;
 

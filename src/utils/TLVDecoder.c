@@ -46,7 +46,7 @@ int decode_bstring (
   }
 }
 
-bstring dump_bstring_xml (const bstring  const bstr)
+bstring dump_bstring_xml (const bstring  bstr)
 {
   if (bstr) {
     int                                     i;

@@ -348,9 +348,9 @@ ue_context_t *mme_create_new_ue_context(void);
 void mme_app_dump_ue_contexts(const mme_ue_context_t * const mme_ue_context);
 
 
-void mme_app_handle_s1ap_ue_context_release_req(const itti_s1ap_ue_context_release_req_t const *s1ap_ue_context_release_req);
+void mme_app_handle_s1ap_ue_context_release_req(const itti_s1ap_ue_context_release_req_t * const s1ap_ue_context_release_req);
 
-void mme_app_handle_enb_deregister_ind(const itti_s1ap_eNB_deregistered_ind_t const* eNB_deregistered_ind);
+void mme_app_handle_enb_deregister_ind(const itti_s1ap_eNB_deregistered_ind_t * const eNB_deregistered_ind);
 
 void mme_app_send_delete_session_request (struct ue_context_s *ue_context_p);
 
