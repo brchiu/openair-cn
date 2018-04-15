@@ -929,7 +929,7 @@ mme_app_dump_ue_contexts (
 
 void
 mme_app_handle_s1ap_ue_context_release_req (
-  const itti_s1ap_ue_context_release_req_t const *s1ap_ue_context_release_req)
+  const itti_s1ap_ue_context_release_req_t * const s1ap_ue_context_release_req)
 //------------------------------------------------------------------------------
 {
   _mme_app_handle_s1ap_ue_context_release(s1ap_ue_context_release_req->mme_ue_s1ap_id,
@@ -939,7 +939,7 @@ mme_app_handle_s1ap_ue_context_release_req (
 }
 
 void
-mme_app_handle_enb_deregister_ind(const itti_s1ap_eNB_deregistered_ind_t const * eNB_deregistered_ind) {
+mme_app_handle_enb_deregister_ind(const itti_s1ap_eNB_deregistered_ind_t * const eNB_deregistered_ind) {
   for (int i = 0; i < eNB_deregistered_ind->nb_ue_to_deregister; i++) {
     _mme_app_handle_s1ap_ue_context_release(eNB_deregistered_ind->mme_ue_s1ap_id[i],
                                             eNB_deregistered_ind->enb_ue_s1ap_id[i],
@@ -963,8 +963,8 @@ mme_app_handle_enb_deregister_ind(const itti_s1ap_eNB_deregistered_ind_t const *
 //------------------------------------------------------------------------------
 void
 mme_app_handle_s1ap_ue_context_release_complete (
-  const itti_s1ap_ue_context_release_complete_t const
-  *s1ap_ue_context_release_complete)
+  const itti_s1ap_ue_context_release_complete_t
+  * const s1ap_ue_context_release_complete)
 //------------------------------------------------------------------------------
 {
   struct ue_context_s                    *ue_context_p = NULL;
