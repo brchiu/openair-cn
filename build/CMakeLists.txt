@@ -108,6 +108,14 @@ macro(add_list_string_option name val helpstr)
     add_definitions("-D${name}=\"${value}\"")
   endif()
 endmacro(add_list_string_option)
+
+function(make_version version_value)
+  math(EXPR result "0")
+  foreach (arg ${ARGN})
+    math(EXPR result "${result} * 16 + ${arg}")
+  endforeach()
+  set(${version_value} "${result}" PARENT_SCOPE)
+endfunction()
 ################################################################
 # Compilation flags
 ################################################################
@@ -141,7 +149,7 @@ set(CMAKE_C_FLAGS
   "${CMAKE_C_FLAGS} ${C_FLAGS_PROCESSOR} -std=gnu99 -Wall -Wstrict-prototypes -fno-strict-aliasing -rdynamic -funroll-loops -Wno-packed-bitfield-compat -fPIC ")
 # add autoTOOLS definitions that were maybe used!
 set(CMAKE_C_FLAGS
-  "${CMAKE_C_FLAGS} -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_FCNTL_H=1 -DHAVE_ARPA_INET_H=1 -DHAVE_SYS_TIME_H=1 -DHAVE_SYS_SOCKET_H=1 -DHAVE_STRERROR=1 -DHAVE_SOCKET=1 -DHAVE_MEMSET=1 -DHAVE_GETTIMEOFDAY=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_LIBSCTP"
+  "${CMAKE_C_FLAGS} -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_FCNTL_H=1 -DHAVE_ARPA_INET_H=1 -DHAVE_SYS_TIME_H=1 -DHAVE_SYS_SOCKET_H=1 -DHAVE_STRERROR=1 -DHAVE_SOCKET=1 -DHAVE_MEMSET=1 -DHAVE_GETTIMEOFDAY=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_LIBSCTP -D'MAKE_VERSION(a,b,c)=((a)*256+(b)*16+c)'"
 )
 # set a flag for changes in the source code
 # these changes are related to hardcoded path to include .h files
@@ -291,10 +299,19 @@ set(asn1_generated_dir ${OPENAIRCN_BIN_DIR})
 # so we generate it at cmake time
 ###############################################################################
 
-add_list1_option(S1AP_VERSION R10 "S1AP Asn.1 grammar version" R8 R9 R10)
-
+add_list1_option(S1AP_RELEASE R10 "S1AP ASN.1 grammar version" R8 R9 R10)
+if (${S1AP_RELEASE} STREQUAL "R8")
+  make_version(S1AP_VERSION 8 10 0)
+  set(ASN1RELDIR r8.10)
+elseif (${S1AP_RELEASE} STREQUAL "R9")
+  make_version(S1AP_VERSION 9 8 0)
+  set(ASN1RELDIR r9.8)
+elseif (${S1AP_RELEASE} STREQUAL "R10")
+  make_version(S1AP_VERSION 10 5 0)
+  set(ASN1RELDIR r10.5)
+endif(${S1AP_RELEASE} STREQUAL "R8")
+add_definitions(-DS1AP_VERSION=${S1AP_VERSION})
 set(S1AP_DIR ${OPENAIRCN_DIR}/src/s1ap)
-set(ASN1RELDIR r10.5)
 
 set(S1AP_ASN_DIR ${S1AP_DIR}/messages/asn1/${ASN1RELDIR})
 set(S1AP_ASN_FILES

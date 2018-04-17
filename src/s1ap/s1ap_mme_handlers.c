@@ -105,12 +105,13 @@ s1ap_message_decoded_callback           messages_callback[][3] = {
   {0, 0, 0},                    /* eNBConfigurationTransfer */
   {0, 0, 0},                    /* MMEConfigurationTransfer */
   {0, 0, 0},                    /* CellTrafficTrace */
-// UPDATE RELEASE 9
+#if (S1AP_VERSION >= MAKE_VERSION(9, 0, 0))
   {0, 0, 0},                    /* Kill */
   {0, 0, 0},                    /* DownlinkUEAssociatedLPPaTransport  */
   {0, 0, 0},                    /* UplinkUEAssociatedLPPaTransport */
   {0, 0, 0},                    /* DownlinkNonUEAssociatedLPPaTransport */
   {0, 0, 0},                    /* UplinkNonUEAssociatedLPPaTransport */
+#endif
 };
 
 const char                             *s1ap_direction2String[] = {
