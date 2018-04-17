@@ -24,7 +24,7 @@
 # author Laurent Thomas, Lionel GAUTHIER
 #
 #######################################
-SUPPORTED_DISTRO="Ubuntu 14.04/16.04, CentOS 7, RHEL 7"
+SUPPORTED_DISTRO="Ubuntu 14.04/16.04/17.04/17.10/18.04, CentOS 7, RHEL 7"
 if [ ! -f /etc/os-release ]; then
   echo_fatal "No /etc/os-release file found. You're likely on an unsupported distro."
 fi
@@ -75,7 +75,6 @@ echo_warning() { cecho "$*" $yellow       ;}
 echo_success() { cecho "$*" $green        ;}
 echo_info()    { cecho "$*" $blue         ;}
 
-
 ########################
 # distribution helpers #
 ########################
@@ -98,6 +97,9 @@ get_distribution_release() {
 check_supported_distribution() {
     local distribution=$(get_distribution_release)
     case "$distribution" in
+        "ubuntu18.04") return 0 ;;
+        "ubuntu17.10") return 0 ;;
+        "ubuntu17.04") return 0 ;;
         "ubuntu16.04") return 0 ;;
         "ubuntu14.04") return 0 ;;
         "rhel7")       return 0 ;;
@@ -105,7 +107,6 @@ check_supported_distribution() {
     esac
     return 1
 }
-
 
 ###########################
 # Cleaners
@@ -142,7 +143,7 @@ clean_all_files() {
 #-------------------------------------------------------------------------------
 # Remove Nettle installation which was done from sources (only done for Ubuntu distro)
 remove_nettle_from_source() {
-    nettle_uninstall_log=$OPENAIRCN_DIR/BUILD/LOG/nettle_uninstall_log.txt
+    nettle_uninstall_log=$OPENAIRCN_DIR/build/log/nettle_uninstall_log.txt
     echo_info "\nUn-Installing Nettle from sources. The log file for nettle un-installation is here: $nettle_uninstall_log "
     (
     $SUDO apt-get remove -y nettle-dev nettle-bin 
@@ -168,7 +169,7 @@ remove_nettle_from_source() {
 #-------------------------------------------------------------------------------
 # Remove Gnutls from source (only done for Ubuntu distro)
 remove_gnutls_from_source(){
-    gnutls_uninstall_log=$OPENAIRCN_DIR/BUILD/LOG/gnutls_uninstall_log.txt
+    gnutls_uninstall_log=$OPENAIRCN_DIR/build/log/gnutls_uninstall_log.txt
     echo_info "\nUn-Installing Gnutls. The log file for Gnutls un-installation is here: $gnutls_uninstall_log "
     (
     $SUDO apt-get remove -y libgnutls-dev
@@ -339,6 +340,7 @@ install_netmap() {
   fi
 }
 #-------------------------------------------------------------------------------
+
 install_libgtpnl_from_source() {
   if [ $1 -gt 0 ]; then
     OPTION="-y"
@@ -380,7 +382,7 @@ install_libgtpnl_from_source() {
     cd libgtpnl
     autoreconf -fi
     ./configure
-    echo "Compiling nettle"
+    echo "Compiling libgtpnl"
     make -j`nproc`
     $SUDO make install
     $SUDO ldconfig
@@ -470,7 +472,6 @@ install_freediameter_from_source() {
       gcc \
       gdb \
       libgcrypt-dev \
-      libgnutls-dev \
       libidn11-dev \
       libmysqlclient-dev \
       libpq-dev \
@@ -481,6 +482,15 @@ install_freediameter_from_source() {
       python-dev \
       ssl-cert \
       swig"
+
+    case "$(get_distribution_release)" in
+      "ubuntu17.04" | "ubuntu17.10" | "ubuntu18.04")
+        PACKAGE_LIST="$PACKAGE_LIST libgnutls28-dev"
+      ;;
+      "ubuntu14.04" | "ubuntu16.04")
+        PACKAGE_LIST="$PACKAGE_LIST libgnutls-dev"
+      ;;
+    esac
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
     PACKAGE_LIST="\
       autoconf \
@@ -675,8 +685,16 @@ check_install_hss_software() {
 
   # Libraries
   if [[ $OS_DISTRO == "ubuntu" ]]; then
+    case "$(get_distribution_release)" in
+        "ubuntu14.04" | "ubuntu16.04" | "ubuntu17.04" | "ubuntu17.10")
+            specific_packages="libconfig8-dev"
+            ;;
+        "ubuntu18.04")
+            specific_packages="libconfig-dev"
+            ;;
+    esac
     PACKAGE_LIST="\
-      libconfig8-dev \
+      $specific_packages \
       libgcrypt11-dev \
       libidn2-0-dev \
       libidn11-dev \
@@ -722,7 +740,7 @@ check_install_hss_software() {
   fi
 
   install_freediameter_from_source $1
-    
+
   case "$(get_distribution_release)" in
     "ubuntu14.04")
       PACKAGE_LIST="\
@@ -731,8 +749,8 @@ check_install_hss_software() {
         python-pexpect \
         libapache2-mod-php*"
       ;;
-    "ubuntu16.04")
-      PACKAGE_LIST="\
+    "ubuntu16.04" | "ubuntu17.04" | "ubuntu17.10" | "ubuntu18.04")
+        PACKAGE_LIST="\
         php \
         phpmyadmin \
         python-pexpect \
@@ -752,6 +770,7 @@ check_install_hss_software() {
       echo_fatal "$OS_DISTRO is not a supported distribution."
       ;;
   esac
+
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST 
 }
 
@@ -782,11 +801,19 @@ check_install_mme_software() {
       doxygen \
       doxygen-gui \
       flex \
-      gccxml \
       gdb \
       git \
       pkg-config \
       subversion"
+
+    case "$(get_distribution_release)" in
+      "ubuntu17.04" | "ubuntu17.10" | "ubuntu18.04")
+        PACKAGE_LIST="$PACKAGE_LIST castxml"
+      ;;
+      "ubuntu14.04" | "ubuntu16.04")
+        PACKAGE_LIST="$PACKAGE_LIST gccxml"
+      ;;
+    esac
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
     PACKAGE_LIST="\
       autoconf \
@@ -809,9 +836,17 @@ check_install_mme_software() {
 
   # Libraries
   if [[ $OS_DISTRO == "ubuntu" ]]; then
-    PACKAGE_LIST="\
+    case "$(get_distribution_release)" in
+        "ubuntu14.04" | "ubuntu16.04" | "ubuntu17.04" | "ubuntu17.10")
+            specific_packages="libconfig8-dev"
+            ;;
+        "ubuntu18.04")
+            specific_packages="libconfig-dev"
+            ;;
+    esac
+    PACKAGE_LIST="
+      $specific_packages \
       guile-2.0-dev \
-      libconfig8-dev \
       libgcrypt11-dev \
       libgmp-dev \
       libhogweed? \
@@ -864,7 +899,14 @@ check_install_mme_software() {
     remove_nettle_from_source
     remove_gnutls_from_source
     $SUDO apt-get install -y nettle-dev nettle-bin
-    $SUDO apt-get install -y libgnutls-dev
+    case "$(get_distribution_release)" in
+      "ubuntu17.04" | "ubuntu17.10" | "ubuntu18.04")
+        $SUDO apt-get install -y libgnutls28-dev
+      ;;
+      "ubuntu14.04" | "ubuntu16.04")
+        $SUDO apt-get install -y libgnutls-dev
+      ;;
+    esac
   fi
   
   install_freediameter_from_source $1
@@ -874,9 +916,17 @@ check_install_mme_software() {
 
   # Networking
   if [[ $OS_DISTRO == "ubuntu" ]]; then
-    PACKAGE_LIST="\
+    case "$(get_distribution_release)" in
+        "ubuntu14.04" | "ubuntu16.04" | "ubuntu17.04" | "ubuntu17.10")
+            specific_packages="iproute"
+            ;;
+        "ubuntu18.04")
+            specific_packages="iproute2"
+            ;;
+    esac
+    PACKAGE_LIST="
+      $specific_packages \
       ethtool \
-      iproute \
       vlan \
       tshark"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
@@ -921,6 +971,7 @@ check_install_mme_software() {
     echo_fatal "$OS_DISTRO is not a supported distribution."
   fi
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
+
   if [ $? -ne 0 ]; then
     echo_fatal "Failed to install package list $PACKAGE_LIST"
   fi
@@ -953,11 +1004,19 @@ check_install_spgw_software() {
       doxygen \
       doxygen-gui \
       flex \
-      gccxml \
       gdb \
       git \
       pkg-config \
       subversion"
+
+    case "$(get_distribution_release)" in
+      "ubuntu17.04" | "ubuntu17.10" | "ubuntu18.04")
+        PACKAGE_LIST="$PACKAGE_LIST castxml"
+      ;;
+      "ubuntu14.04" | "ubuntu16.04")
+        PACKAGE_LIST="$PACKAGE_LIST gccxml"
+      ;;
+    esac
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
     PACKAGE_LIST="\
       autoconf \
@@ -975,15 +1034,24 @@ check_install_spgw_software() {
     echo_fatal "$OS_DISTRO is not a supported distribution."
   fi
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
+
   if [ $? -ne 0 ]; then
     echo_fatal "Failed to install package list $PACKAGE_LIST"
   fi
 
   # Libraries
   if [[ $OS_DISTRO == "ubuntu" ]]; then
-    PACKAGE_LIST="\
+    case "$(get_distribution_release)" in
+        "ubuntu14.04" | "ubuntu16.04" | "ubuntu17.04" | "ubuntu17.10")
+            specific_packages="libconfig8-dev"
+            ;;
+        "ubuntu18.04")
+            specific_packages="libconfig-dev"
+            ;;
+    esac
+    PACKAGE_LIST="
+      $specific_packages \
       guile-2.0-dev \
-      libconfig8-dev \
       libgcrypt11-dev \
       libgmp-dev \
       libhogweed? \
@@ -1026,10 +1094,18 @@ check_install_spgw_software() {
 
   # Networking
   if [[ $OS_DISTRO == "ubuntu" ]]; then
-    PACKAGE_LIST="\
+    case "$(get_distribution_release)" in
+        "ubuntu14.04" | "ubuntu16.04" | "ubuntu17.04" | "ubuntu17.10")
+            specific_packages="iproute"
+            ;;
+        "ubuntu18.04")
+            specific_packages="iproute2"
+            ;;
+    esac
+    PACKAGE_LIST="
+      $specific_packages \
       ethtool \
       iperf \
-      iproute \
       vlan \
       tshark"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
@@ -1081,10 +1157,10 @@ check_install_spgw_software() {
 install_asn1c_from_source(){
   if [ $1 -eq 0 ]; then
     OPTION=""
-    read -p "Do you want to install asn1c rev 1516 patched? <y/N> " prompt
+    read -p "Do you want to install asn1c [0] no [1] asn1c rev 1516 patched [2] community's new version ? [0|1|2] " prompt
   else
-    prompt='y'
-    OPTION="-y"
+    prompt='0'
+    OPTION="-0"
   fi
 
   if [[ "$OS_DISTRO" == "ubuntu" ]]; then
@@ -1110,16 +1186,29 @@ install_asn1c_from_source(){
   fi
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
 
-  if [[ $prompt =~ [yY](es)* ]]
-  then
-    $SUDO rm -rf /tmp/asn1c
-    mkdir -p /tmp/asn1c
-    git clone https://gitlab.eurecom.fr/oai/asn1c.git /tmp/asn1c
-    cd /tmp/asn1c
-    ./configure
-    make > /tmp/log_compile_asn1c 2>&1
-    $SUDO make install
-  fi
+  case $prompt in
+    "0")
+    ;;
+    "1")
+      $SUDO rm -rf /tmp/asn1c
+      mkdir -p /tmp/asn1c
+      GIT_SSL_NO_VERIFY=true git clone https://gitlab.eurecom.fr/oai/asn1c.git /tmp/asn1c
+      cd /tmp/asn1c
+      ./configure
+      make > /tmp/log_compile_asn1c 2>&1
+      $SUDO make install
+    ;;
+    "2")
+      $SUDO rm -rf /tmp/asn1c
+      mkdir -p /tmp/asn1c
+      git clone https://github.com/brchiu/asn1c /tmp/asn1c
+      cd /tmp/asn1c
+      git checkout velichkov_s1ap_plus_option_group
+      autoreconf -iv && ./configure
+      make -j`nproc` > /tmp/log_compile_asn1c 2>&1
+      $SUDO make install
+    ;;
+  esac
 }
 
 #-------------------------------------------------------------------------------
