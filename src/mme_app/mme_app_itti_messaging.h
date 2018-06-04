@@ -31,6 +31,7 @@ static inline void mme_app_itti_ue_context_release(
 {
   MessageDef *message_p;
 
+  OAILOG_FUNC_IN (LOG_MME_APP);
   message_p = itti_alloc_new_message(TASK_MME_APP, S1AP_UE_CONTEXT_RELEASE_COMMAND);
   memset ((void *)&message_p->ittiMsg.s1ap_ue_context_release_command, 0, sizeof (itti_s1ap_ue_context_release_command_t));
   S1AP_UE_CONTEXT_RELEASE_COMMAND (message_p).mme_ue_s1ap_id = ue_context_p->mme_ue_s1ap_id;
