@@ -43,6 +43,7 @@
 #include "MobileStationClassmark3.h"
 #include "SupportedCodecList.h"
 #include "AdditionalUpdateType.h"
+#include "VoiceDomainPreferenceAndUeUsageSetting.h"
 #include "GutiType.h"
 
 /* Minimum length macro. Formed by minimum length of each mandatory field */
@@ -72,7 +73,9 @@
     MOBILE_STATION_CLASSMARK_2_MAXIMUM_LENGTH + \
     MOBILE_STATION_CLASSMARK_3_MAXIMUM_LENGTH + \
     SUPPORTED_CODEC_LIST_MAXIMUM_LENGTH + \
-    ADDITIONAL_UPDATE_TYPE_MAXIMUM_LENGTH )
+    ADDITIONAL_UPDATE_TYPE_MAXIMUM_LENGTH + \
+    VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_MAXIMUM_LENGTH + \
+    GUTI_TYPE_MAXIMUM_LENGTH)
 
 /* If an optional value is present and should be encoded, the corresponding
  * Bit mask should be set to 1.
@@ -94,7 +97,17 @@
 # define TRACKING_AREA_UPDATE_REQUEST_MOBILE_STATION_CLASSMARK_3_PRESENT                    (1<<14)
 # define TRACKING_AREA_UPDATE_REQUEST_SUPPORTED_CODECS_PRESENT                              (1<<15)
 # define TRACKING_AREA_UPDATE_REQUEST_ADDITIONAL_UPDATE_TYPE_PRESENT                        (1<<16)
-# define TRACKING_AREA_UPDATE_REQUEST_OLD_GUTI_TYPE_PRESENT                                 (1<<17)
+# define TRACKING_AREA_UPDATE_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_PRESENT  (1<<17)
+# define TRACKING_AREA_UPDATE_REQUEST_OLD_GUTI_TYPE_PRESENT                                 (1<<18)
+# define TRACKING_AREA_UPDATE_REQUEST_DEVICE_PROPERTIES_PRESENT                             (1<<19)
+# define TRACKING_AREA_UPDATE_REQUEST_MS_NETWORK_FEATURE_SUPPORT_PRESENT                    (1<<20)
+# define TRACKING_AREA_UPDATE_REQUEST_TMSI_BASED_NRI_CONTAINER_PRESENT                      (1<<21)
+# define TRACKING_AREA_UPDATE_REQUEST_T3324_VALUE_PRESENT                                   (1<<22)
+# define TRACKING_AREA_UPDATE_REQUEST_T3412_EXTENDED_VALUE_PRESENT                          (1<<23)
+# define TRACKING_AREA_UPDATE_REQUEST_EXTENDED_DRX_PARAMETERS_PRESENT                       (1<<24)
+# define TRACKING_AREA_UPDATE_REQUEST_UE_ADDITIONAL_SECURITY_CAPABILITY_PRESENT             (1<<25)
+# define TRACKING_AREA_UPDATE_REQUEST_UE_STATUS_PRESENT                                     (1<<26)
+
 
 typedef enum tracking_area_update_request_iei_tag {
   TRACKING_AREA_UPDATE_REQUEST_NONCURRENT_NATIVE_NAS_KEY_SET_IDENTIFIER_IEI       = 0xB0, /* 0xB0 = 176 */
@@ -114,7 +127,22 @@ typedef enum tracking_area_update_request_iei_tag {
   TRACKING_AREA_UPDATE_REQUEST_MOBILE_STATION_CLASSMARK_3_IEI                     = 0x20, /* 0x20 = 32 */
   TRACKING_AREA_UPDATE_REQUEST_SUPPORTED_CODECS_IEI                               = 0x40, /* 0x40 = 64 */
   TRACKING_AREA_UPDATE_REQUEST_ADDITIONAL_UPDATE_TYPE_IEI                         = 0xF0, /* 0xF0 = 240 */
+
+  /* release 10.15.0 */
+  TRACKING_AREA_UPDATE_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_IEI   = 0x5D, /* 0x5D = 93  */
   TRACKING_AREA_UPDATE_REQUEST_OLD_GUTI_TYPE_IEI                                  = 0xE0, /* 0xE0 = 224 */
+  TRACKING_AREA_UPDATE_REQUEST_DEVICE_PROPERTIES_IEI                              = 0xD0, /* 0xD0 = 208 */
+  TRACKING_AREA_UPDATE_REQUEST_MS_NETWORK_FEATURE_SUPPORT_IEI                     = 0xC0, /* 0xC0 = 192 */
+  /* release 11.14.0 */
+  TRACKING_AREA_UPDATE_REQUEST_TMSI_BASED_NRI_CONTAINER_IEI                       = 0x10, /* 0x10 = 16  */
+  /* release 12.13.0 */
+  TRACKING_AREA_UPDATE_REQUEST_T3324_VALUE_IEI                                    = 0x6A, /* 0x6A = 106 */
+  TRACKING_AREA_UPDATE_REQUEST_T3412_EXTENDED_VALUE_IEI                           = 0x5E, /* 0x5E = 94  */
+  /* release 13.11.0 */
+  TRACKING_AREA_UPDATE_REQUEST_EXTENDED_DRX_PARAMETERS_IEI                        = 0x6E, /* 0x6E = 110 */
+  /* release 15.2.0 */
+  TRACKING_AREA_UPDATE_REQUEST_UE_ADDITIONAL_SECURITY_CAPABILITY                  = 0x6F, /* 0x6F = 111 */
+  TRACKING_AREA_UPDATE_REQUEST_UE_STATUS                                          = 0x6D, /* 0x6D = 109 */
 } tracking_area_update_request_iei;
 
 /*
@@ -151,6 +179,7 @@ typedef struct tracking_area_update_request_msg_tag {
   MobileStationClassmark3                  mobilestationclassmark3;
   SupportedCodecList                       supportedcodecs;
   AdditionalUpdateType                     additionalupdatetype;
+  VoiceDomainPreferenceAndUeUsageSetting   voicedomainpreferenceandueusagesetting;
   GutiType                                 oldgutitype;
 } tracking_area_update_request_msg;
 

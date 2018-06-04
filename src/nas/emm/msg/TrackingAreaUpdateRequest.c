@@ -260,6 +260,17 @@ decode_tracking_area_update_request (
       tracking_area_update_request->presencemask |= TRACKING_AREA_UPDATE_REQUEST_ADDITIONAL_UPDATE_TYPE_PRESENT;
       break;
 
+    case TRACKING_AREA_UPDATE_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_IEI:
+      if ((decoded_result = decode_voice_domain_preference_and_ue_usage_setting (&tracking_area_update_request->voicedomainpreferenceandueusagesetting, TRACKING_AREA_UPDATE_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_IEI, buffer + decoded, len - decoded)) <= 0)
+        return decoded_result;
+
+      decoded += decoded_result;
+      /*
+       * Set corresponding mask to 1 in presencemask
+       */
+      tracking_area_update_request->presencemask |= TRACKING_AREA_UPDATE_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_PRESENT;
+      break;
+
     case TRACKING_AREA_UPDATE_REQUEST_OLD_GUTI_TYPE_IEI:
       if ((decoded_result = decode_guti_type (&tracking_area_update_request->oldgutitype, TRACKING_AREA_UPDATE_REQUEST_OLD_GUTI_TYPE_IEI, buffer + decoded, len - decoded)) <= 0)
         return decoded_result;
@@ -450,6 +461,15 @@ encode_tracking_area_update_request (
   if ((tracking_area_update_request->presencemask & TRACKING_AREA_UPDATE_REQUEST_ADDITIONAL_UPDATE_TYPE_PRESENT)
       == TRACKING_AREA_UPDATE_REQUEST_ADDITIONAL_UPDATE_TYPE_PRESENT) {
     if ((encode_result = encode_additional_update_type (&tracking_area_update_request->additionalupdatetype, TRACKING_AREA_UPDATE_REQUEST_ADDITIONAL_UPDATE_TYPE_IEI, buffer + encoded, len - encoded)) < 0)
+      // Return in case of error
+      return encode_result;
+    else
+      encoded += encode_result;
+  }
+
+  if ((tracking_area_update_request->presencemask & TRACKING_AREA_UPDATE_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_PRESENT)
+      == TRACKING_AREA_UPDATE_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_PRESENT) {
+    if ((encode_result = encode_voice_domain_preference_and_ue_usage_setting (&tracking_area_update_request->voicedomainpreferenceandueusagesetting, TRACKING_AREA_UPDATE_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_IEI, buffer + encoded, len - encoded)) < 0)
       // Return in case of error
       return encode_result;
     else
