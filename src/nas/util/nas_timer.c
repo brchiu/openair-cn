@@ -465,7 +465,9 @@ nas_timer_handle_signal_expiry (
   /*
    * Get the timer entry for which the system timer expired
    */
-  nas_timer_entry_t                      *te = _nas_timer_db.head->entry;
+  nas_timer_entry_t                      *te = _nas_timer_db.head ? _nas_timer_db.head->entry : 0;
+
+  if (!te) return;
 
   te->cb (te->args);
 }
