@@ -92,7 +92,7 @@ s1ap_mme_thread (
 
   while (1) {
     MessageDef                             *received_message_p = NULL;
-    MessagesIds                             message_id = MESSAGES_ID_MAX;
+
     /*
      * Trying to fetch a message from the message queue.
      * * * * If the queue is empty, this function will block till a
@@ -112,22 +112,27 @@ s1ap_mme_thread (
          * New message received from SCTP layer.
          * * * * Decode and handle it.
          */
-        s1ap_message                            message = {0};
-
+        S1AP_S1AP_PDU_t                             pdu = {0};
+        int msglen, offset = 0;
         /*
          * Invoke S1AP message decoder
          */
-        if (s1ap_mme_decode_pdu (&message, SCTP_DATA_IND (received_message_p).payload, &message_id) < 0) {
-          // TODO: Notify eNB of failure with right cause
-          OAILOG_ERROR (LOG_S1AP, "Failed to decode new buffer\n");
-        } else {
-          s1ap_mme_handle_message (SCTP_DATA_IND (received_message_p).assoc_id,
-                                   SCTP_DATA_IND (received_message_p).stream, &message);
-        }
+        do {
+          memset(&pdu, 0, sizeof(pdu));
 
-        if (message_id != MESSAGES_ID_MAX) {
-          s1ap_free_mme_decode_pdu(&message, message_id);
-        }
+          if ((msglen = s1ap_mme_decode_pdu (&pdu, SCTP_DATA_IND (received_message_p).payload, offset)) < 0) {
+            // TODO: Notify eNB of failure with right cause
+            OAILOG_ERROR (LOG_S1AP, "Failed to decode new buffer\n");
+            break;
+          } else {
+            s1ap_mme_handle_message (SCTP_DATA_IND (received_message_p).assoc_id,
+                                     SCTP_DATA_IND (received_message_p).stream, &pdu);
+
+            ASN_STRUCT_FREE_CONTENTS_ONLY(asn_DEF_S1AP_S1AP_PDU, &pdu);
+          }
+          offset += msglen + SCTP_DATA_CHUNK_HEADER_SIZE;
+
+        } while (offset < blength(SCTP_DATA_IND (received_message_p).payload));
 
         /*
          * Free received PDU array
@@ -231,8 +236,8 @@ s1ap_mme_init(void)
   OAILOG_DEBUG (LOG_S1AP, "Initializing S1AP interface\n");
 
   if (get_asn1c_environment_version () < ASN1_MINIMUM_VERSION) {
-    OAILOG_ERROR (LOG_S1AP, "ASN1C version %d fount, expecting at least %d\n", get_asn1c_environment_version (), ASN1_MINIMUM_VERSION);
-    return RETURNerror;
+    OAILOG_ERROR (LOG_S1AP, "ASN1C version %d found, expecting at least %d\n", get_asn1c_environment_version (), ASN1_MINIMUM_VERSION);
+    //return RETURNerror;
   } else {
     OAILOG_DEBUG (LOG_S1AP, "ASN1C version %d\n", get_asn1c_environment_version ());
   }

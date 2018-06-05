@@ -266,7 +266,7 @@ function main()
   if [ $run_gdb -eq 0 ]; then 
     # trap keyboard interrupt (control-c)
     trap control_c SIGINT
-    $SUDO mme  `echo $exe_arguments` 2>&1 
+    $SUDO mme  `echo $exe_arguments` 2>&1 | tee mme.log
   else
     # trap keyboard interrupt (control-c) is done by gdb
     $SUDO touch      ~/.gdb_mme

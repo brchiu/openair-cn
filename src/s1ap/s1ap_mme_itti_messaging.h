@@ -169,7 +169,7 @@ static inline void s1ap_mme_itti_nas_establish_ind(
 #endif
 
 static inline void s1ap_mme_itti_nas_non_delivery_ind(
-    const mme_ue_s1ap_id_t ue_id, uint8_t * const nas_msg, const size_t nas_msg_length, const S1ap_Cause_t * const cause)
+    const mme_ue_s1ap_id_t ue_id, uint8_t * const nas_msg, const size_t nas_msg_length, const S1AP_Cause_t * const cause)
 {
   MessageDef     *message_p = NULL;
   // TODO translate, insert, cause in message

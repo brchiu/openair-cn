@@ -33,7 +33,7 @@
 static
   int
 s1ap_mme_compare_plmn (
-  const S1ap_PLMNidentity_t * const plmn)
+  const S1AP_PLMNidentity_t * const plmn)
 {
   int                                     i = 0;
   uint16_t                                mcc = 0;
@@ -66,7 +66,7 @@ s1ap_mme_compare_plmn (
 static
   int
 s1ap_mme_compare_plmns (
-  S1ap_BPLMNs_t * b_plmns)
+  S1AP_BPLMNs_t * b_plmns)
 {
   int                                     i =0;
   int                                     matching_occurence = 0;
@@ -92,7 +92,7 @@ s1ap_mme_compare_plmns (
 static
   int
 s1ap_mme_compare_tac (
-  const S1ap_TAC_t * const tac)
+  const S1AP_TAC_t * const tac)
 {
   int                                     i = 0;
   uint16_t                                tac_value = 0;
@@ -120,7 +120,7 @@ s1ap_mme_compare_tac (
 */
 int
 s1ap_mme_compare_ta_lists (
-  S1ap_SupportedTAs_t * ta_list)
+  S1AP_SupportedTAs_t * ta_list)
 {
   int                                     i;
   int                                     tac_ret,
@@ -132,7 +132,7 @@ s1ap_mme_compare_ta_lists (
    * Parse every item in the list and try to find matching parameters
    */
   for (i = 0; i < ta_list->list.count; i++) {
-    S1ap_SupportedTAs_Item_t               *ta;
+    S1AP_SupportedTAs_Item_t               *ta;
 
     ta = ta_list->list.array[i];
     DevAssert (ta != NULL);

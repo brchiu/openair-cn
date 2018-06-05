@@ -1055,8 +1055,14 @@ _emm_attach_identify (
      * that is not known by the network; the MME shall initiate an
      * identification procedure to retrieve the IMSI from the UE.
      */
+#if 1
     rc = emm_proc_identification (emm_ctx->ue_id, emm_ctx, EMM_IDENT_TYPE_IMSI, _emm_attach_identify, _emm_attach_release, _emm_attach_release);
-
+#else
+    emm_ctx->_security.sc_type = SECURITY_CTX_TYPE_FULL_NATIVE;
+    emm_ctx->_security.vector_index = 0;
+    emm_ctx->member_present_mask |= EMM_CTXT_MEMBER_SECURITY;
+    rc = emm_proc_identification (emm_ctx->ue_id, emm_ctx, EMM_IDENT_TYPE_IMSI, _emm_attach /*_emm_attach_identify*/, _emm_attach_release, _emm_attach_release);
+#endif
     if (rc != RETURNok) {
       // Failed to initiate the identification procedure
       OAILOG_WARNING (LOG_NAS_EMM, "ue_id=" MME_UE_S1AP_ID_FMT "EMM-PROC  - Failed to initiate identification procedure\n", emm_ctx->ue_id);
@@ -1078,8 +1084,14 @@ _emm_attach_identify (
      * that is not known by the network; the MME shall initiate an
      * identification procedure to retrieve the IMSI from the UE.
      */
+#if 1
     rc = emm_proc_identification (emm_ctx->ue_id, emm_ctx, EMM_IDENT_TYPE_IMSI, _emm_attach_identify, _emm_attach_release, _emm_attach_release);
-
+#else
+    emm_ctx->_security.sc_type = SECURITY_CTX_TYPE_FULL_NATIVE;
+    emm_ctx->_security.vector_index = 0;
+    emm_ctx->member_present_mask |= EMM_CTXT_MEMBER_SECURITY;
+    rc = emm_proc_identification (emm_ctx->ue_id, emm_ctx, EMM_IDENT_TYPE_IMSI, _emm_attach /*_emm_attach_identify*/, _emm_attach_release, _emm_attach_release);
+#endif
     if (rc != RETURNok) {
       // Failed to initiate the identification procedure
       OAILOG_WARNING (LOG_NAS_EMM, "ue_id=" MME_UE_S1AP_ID_FMT "EMM-PROC  - Failed to initiate identification procedure\n", emm_ctx->ue_id);
@@ -1881,7 +1893,11 @@ _emm_attach_update (
   /*
    * Emergency bearer services indicator
    */
+#if 1
   ctx->is_emergency = (type == EMM_ATTACH_TYPE_EMERGENCY);
+#else
+  ctx->is_emergency = true;
+#endif
   /*
    * Security key set identifier
    */

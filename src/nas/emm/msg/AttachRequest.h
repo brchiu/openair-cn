@@ -98,7 +98,6 @@ typedef enum attach_request_iei_tag {
   ATTACH_REQUEST_ADDITIONAL_GUTI_IEI                              = 0x50, /* 0x50 = 80  */
   ATTACH_REQUEST_LAST_VISITED_REGISTERED_TAI_IEI                  = 0x52, /* 0x52 = 82  */
   ATTACH_REQUEST_DRX_PARAMETER_IEI                                = 0x5C, /* 0x5C = 92  */
-  ATTACH_REQUEST_MS_NETWORK_FEATURE_SUPPORT_IEI                   = 0xC0, /* 0xC- = 192-  */
   ATTACH_REQUEST_MS_NETWORK_CAPABILITY_IEI                        = 0x31, /* 0x31 = 49  */
   ATTACH_REQUEST_OLD_LOCATION_AREA_IDENTIFICATION_IEI             = 0x13, /* 0x13 = 19  */
   ATTACH_REQUEST_TMSI_STATUS_IEI                                  = 0x90, /* 0x90 = 144 */
@@ -106,8 +105,12 @@ typedef enum attach_request_iei_tag {
   ATTACH_REQUEST_MOBILE_STATION_CLASSMARK_3_IEI                   = 0x20, /* 0x20 = 32  */
   ATTACH_REQUEST_SUPPORTED_CODECS_IEI                             = 0x40, /* 0x40 = 64  */
   ATTACH_REQUEST_ADDITIONAL_UPDATE_TYPE_IEI                       = 0xF0, /* 0xF0 = 240 */
-  ATTACH_REQUEST_OLD_GUTI_TYPE_IEI                                = 0xE0, /* 0xE0 = 224 */
   ATTACH_REQUEST_VOICE_DOMAIN_PREFERENCE_AND_UE_USAGE_SETTING_IEI = 0x5D, /* 0x5D = 93  */
+  ATTACH_REQUEST_DEVICE_PROPERTIES_IEI                            = 0xD0, /* 0xD- =     */
+  ATTACH_REQUEST_OLD_GUTI_TYPE_IEI                                = 0xE0, /* 0xE0 = 224 */
+  ATTACH_REQUEST_MS_NETWORK_FEATURE_SUPPORT_IEI                   = 0xC0, /* 0xC- = 192-  */
+
+// release 10.15.0
 } attach_request_iei;
 
 /*

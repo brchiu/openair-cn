@@ -239,7 +239,7 @@ function main()
   # Running executable
   #####################################
   if [ $run_gdb -eq 0 ]; then 
-    $SUDO oai_hss  `echo $exe_arguments` 2>&1 
+    $SUDO oai_hss  `echo $exe_arguments` 2>&1 | tee hss.log
   else
     $SUDO touch      ~/.gdb_hss
     $SUDO chmod 777  ~/.gdb_hss

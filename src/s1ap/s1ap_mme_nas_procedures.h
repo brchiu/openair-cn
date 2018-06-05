@@ -27,7 +27,6 @@
 
 #include "common_defs.h"
 #include "bstrlib.h"
-#include "s1ap_ies_defs.h"
 #include "intertask_interface.h"
 
 /** \brief Handle an Initial UE message.
@@ -38,7 +37,7 @@
  **/
 int s1ap_mme_handle_initial_ue_message(const sctp_assoc_id_t assocId,
                                        const sctp_stream_id_t stream,
-                                       struct s1ap_message_s *message);
+                                       S1AP_S1AP_PDU_t *pdu);
 
 /** \brief Handle an Uplink NAS transport message.
  * Process the RRC transparent container and forward it to NAS entity.
@@ -49,7 +48,7 @@ int s1ap_mme_handle_initial_ue_message(const sctp_assoc_id_t assocId,
  **/
 int s1ap_mme_handle_uplink_nas_transport(const sctp_assoc_id_t assocId,
                                          const sctp_stream_id_t stream,
-                                         struct s1ap_message_s *message);
+                                         S1AP_S1AP_PDU_t *pdu);
 
 /** \brief Handle a NAS non delivery indication message from eNB
  * \param assocId lower layer assoc id (SCTP)
@@ -59,7 +58,7 @@ int s1ap_mme_handle_uplink_nas_transport(const sctp_assoc_id_t assocId,
  **/
 int s1ap_mme_handle_nas_non_delivery(const sctp_assoc_id_t assocId,
                                      const sctp_stream_id_t stream,
-                                     struct s1ap_message_s *message);
+                                     S1AP_S1AP_PDU_t *pdu);
 
 void s1ap_handle_conn_est_cnf(const itti_mme_app_connection_establishment_cnf_t * const conn_est_cnf_p);
 
